@@ -1,0 +1,118 @@
+---
+/** Pied de page : nom, adresse et téléphone (identiques aux données Google), réseaux. */
+import Logo from './Logo.astro';
+import Checker from './ui/Checker.astro';
+import { getRestaurant } from '../lib/data';
+
+const restaurant = await getRestaurant();
+const { adresse, contact, reseaux } = restaurant;
+const annee = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <Checker a="var(--color-teal)" b="var(--color-ink)" />
+  <div class="footer__inner container">
+    <div class="footer__brand">
+      <Logo name={restaurant.nom} size="4.5rem" />
+      <p class="footer__tagline">{restaurant.accroche}</p>
+    </div>
+
+    <address class="footer__nap">
+      <strong>{restaurant.nom}</strong>
+      <br />
+      {adresse.rue}, {adresse.codePostal} {adresse.commune}
+      <br />
+      {adresse.ile}, Polynésie française
+      <br />
+      <a href={`tel:${contact.telephoneInternational}`}>{contact.telephone}</a>
+    </address>
+
+    <ul class="footer__links">
+      <li>
+        <a href="#menu">Menu</a>
+      </li>
+      <li>
+        <a href="#moments">Brunch & happy hour</a>
+      </li>
+      <li>
+        <a href="#infos">Infos & horaires</a>
+      </li>
+      {reseaux.instagram && (
+        <li>
+          <a href={reseaux.instagram} target="_blank" rel="noopener">
+            Instagram
+          </a>
+        </li>
+      )}
+      {reseaux.facebook && (
+        <li>
+          <a href={reseaux.facebook} target="_blank" rel="noopener">
+            Facebook
+          </a>
+        </li>
+      )}
+    </ul>
+  </div>
+  <p class="footer__legal container">
+    © {annee} {restaurant.nom}. Tous droits réservés.
+  </p>
+</footer>
+
+<style>
+  .footer {
+    background: var(--color-ink);
+    color: var(--color-cream);
+  }
+
+  .footer__inner {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-7);
+  }
+
+  @media (min-width: 800px) {
+    .footer__inner {
+      grid-template-columns: 1.2fr 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .footer__brand {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
+  }
+
+  .footer__tagline {
+    font-family: var(--font-script);
+    font-size: var(--text-lg);
+    color: var(--color-neon);
+  }
+
+  .footer__nap {
+    font-style: normal;
+    line-height: 1.7;
+  }
+
+  .footer a {
+    color: var(--color-cream);
+  }
+
+  .footer a:hover {
+    color: var(--color-neon);
+  }
+
+  .footer__links {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__legal {
+    padding-block: var(--space-4) var(--space-6);
+    border-top: 1px solid rgb(246 238 220 / 0.2);
+    font-size: var(--text-xs);
+    color: rgb(246 238 220 / 0.75);
+  }
+</style>

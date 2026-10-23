@@ -1,0 +1,94 @@
+---
+/**
+ * Titre de section, en deux styles repris des visuels du restaurant :
+ * - "neon" : bandeau teal foncé et lettres néon, comme les rubriques de la carte ;
+ * - "poster" : grandes capitales, avec une accroche facultative en script rouge.
+ */
+interface Props {
+  title: string;
+  /** Accroche en script, affichée avant le titre (style "poster" uniquement). */
+  script?: string;
+  variant?: 'neon' | 'poster';
+  as?: 'h1' | 'h2' | 'h3';
+  align?: 'start' | 'center';
+  id?: string;
+}
+
+const { title, script, variant = 'poster', as: Tag = 'h2', align = 'center', id } = Astro.props;
+---
+
+{variant === 'neon' ? (
+  <div class:list={['neon', `align-${align}`]}>
+    <Tag id={id} class="neon__text">
+      {title}
+    </Tag>
+  </div>
+) : (
+  <Tag id={id} class:list={['poster', `align-${align}`]}>
+    {script && <span class="poster__script">{script}</span>}
+    <span class="poster__title">{title}</span>
+  </Tag>
+)}
+
+<style>
+  .align-center {
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .align-start {
+    text-align: start;
+  }
+
+  /* Néon */
+  .neon {
+    width: fit-content;
+    min-width: min(100%, 22rem);
+    padding: var(--space-3) var(--space-7);
+    background: var(--color-teal-deep);
+    border: 3px solid var(--color-teal);
+    border-radius: var(--radius-md);
+    box-shadow:
+      inset 0 0 0 2px var(--color-teal-deep),
+      var(--shadow-soft);
+  }
+
+  .neon__text {
+    font-size: var(--text-2xl);
+    letter-spacing: 0.08em;
+    color: var(--color-teal-deep);
+    -webkit-text-stroke: 1.5px var(--color-neon);
+    text-shadow:
+      0 0 6px rgb(140 242 238 / 0.9),
+      0 0 18px rgb(140 242 238 / 0.55);
+  }
+
+  /* Affiche */
+  .poster {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .poster.align-start {
+    align-items: flex-start;
+  }
+
+  .poster__script {
+    font-family: var(--font-script);
+    font-size: var(--text-xl);
+    line-height: 1.1;
+    letter-spacing: 0;
+    color: var(--color-red);
+    -webkit-text-stroke: 5px var(--color-cream);
+    paint-order: stroke fill;
+    text-shadow: 3px 3px 0 var(--color-ink);
+    transform: rotate(-4deg);
+  }
+
+  .poster__title {
+    font-size: var(--text-2xl);
+    color: var(--color-ink);
+  }
+</style>

@@ -1,0 +1,271 @@
+---
+/**
+ * Bannière d'accueil : met toujours en avant le burger du moment (src/data/burger-du-moment.yaml).
+ * Composition reprise de leurs affiches "suggestion du mois" : fond crème, titre rouge,
+ * burger posé sur un disque à rayons teal, bande de damier en bas.
+ * Le <h1> reste stable pour le référencement ; le burger est en <h2>.
+ */
+import { Image } from 'astro:assets';
+import Button from './ui/Button.astro';
+import Checker from './ui/Checker.astro';
+import ImagePlaceholder from './ui/ImagePlaceholder.astro';
+import Starburst from './ui/Starburst.astro';
+import Sunburst from './ui/Sunburst.astro';
+import { getBurgerDuMoment, getRestaurant } from '../lib/data';
+import { formatPrix } from '../lib/format';
+
+const [burger, restaurant] = await Promise.all([getBurgerDuMoment(), getRestaurant()]);
+---
+
+<section class="hero" aria-labelledby="hero-burger">
+  <div class="hero__inner container">
+    <div class="hero__head">
+      <h1 class="hero__site">
+        {restaurant.nom} · Diner américain à {restaurant.adresse.commune}, {restaurant.adresse.ile}
+      </h1>
+      <p class="hero__mention">{burger.mention}</p>
+      <h2 id="hero-burger" class="hero__title">
+        <span class="hero__title-main">{burger.titre}</span>
+        <span class="hero__title-script">{burger.titreScript}</span>
+      </h2>
+    </div>
+
+    <div class:list={['hero__visual', { 'hero__visual--framed': !burger.detouree }]}>
+      <div class="hero__disc">
+        <Sunburst rays={28} />
+      </div>
+      {burger.image ? (
+        <Image
+          src={burger.image}
+          alt={burger.imageAlt}
+          class="hero__img"
+          widths={[360, 560, 760, 960]}
+          sizes="(min-width: 900px) 40vw, 85vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+      ) : (
+        <ImagePlaceholder class="hero__img" label="Photo du burger à venir" round />
+      )}
+      {burger.pastille && (
+        <Starburst class="hero__badge hero__badge--tag" size="clamp(5rem, 3.5rem + 4vw, 7rem)">
+          {burger.pastille}
+        </Starburst>
+      )}
+      {burger.prix && (
+        <Starburst
+          class="hero__badge hero__badge--price"
+          tone="cream"
+          tilt={10}
+          size="clamp(6rem, 4.5rem + 4vw, 8.5rem)"
+        >
+          {formatPrix(burger.prix, restaurant.devise)}
+        </Starburst>
+      )}
+    </div>
+
+    <div class="hero__body">
+      <p class="hero__desc">{burger.description}</p>
+      <div class="hero__actions">
+        <Button href="#menu" size="lg">
+          Voir le menu
+        </Button>
+        <Button href="#infos" variant="secondary" size="lg">
+          Nous trouver
+        </Button>
+      </div>
+    </div>
+  </div>
+  <Checker class="hero__checker" a="var(--color-teal)" b="var(--color-white)" />
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-cream);
+  }
+
+  /* Grande diagonale teal derrière le burger, comme sur l'affiche */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 38% 0 0 0;
+    background: var(--color-teal);
+    clip-path: polygon(0 35%, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-areas:
+      'head'
+      'visual'
+      'body';
+    gap: var(--space-5);
+    padding-block: var(--space-7) var(--space-7);
+  }
+
+  @media (min-width: 900px) {
+    .hero::before {
+      inset: 0 0 0 48%;
+      clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .hero__inner {
+      grid-template-columns: 1.05fr 1fr;
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        'head visual'
+        'body visual';
+      column-gap: var(--space-7);
+      align-items: center;
+      min-height: min(46rem, 86vh);
+      padding-block: var(--space-8);
+    }
+
+    .hero__head {
+      align-self: end;
+    }
+
+    .hero__body {
+      align-self: start;
+    }
+  }
+
+  .hero__head {
+    grid-area: head;
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+  }
+
+  .hero__body {
+    grid-area: body;
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+  }
+
+  .hero__site {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-transform: uppercase;
+    color: var(--color-teal-dark);
+  }
+
+  .hero__mention {
+    padding: 0.35em 0.9em 0.25em;
+    background: var(--color-ink);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-poster);
+    font-size: var(--text-lg);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-cream);
+  }
+
+  .hero__title {
+    display: flex;
+    flex-direction: column;
+    line-height: 0.88;
+  }
+
+  .hero__title-main {
+    font-size: var(--text-3xl);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--color-red);
+    text-shadow: 4px 4px 0 var(--color-ink);
+  }
+
+  .hero__title-script {
+    margin-top: -0.05em;
+    margin-left: 0.5em;
+    font-family: var(--font-script);
+    font-size: calc(var(--text-3xl) * 0.7);
+    letter-spacing: 0;
+    color: var(--color-red);
+    -webkit-text-stroke: 0.12em var(--color-cream);
+    paint-order: stroke fill;
+    text-shadow: 4px 4px 0 var(--color-ink);
+    transform: rotate(-5deg);
+    transform-origin: left center;
+  }
+
+  .hero__desc {
+    max-width: 34ch;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  /* Visuel : disque à rayons + burger posé dessus */
+  .hero__visual {
+    grid-area: visual;
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: min(100%, 34rem);
+    margin-inline: auto;
+    aspect-ratio: 1;
+  }
+
+  .hero__disc {
+    position: absolute;
+    inset: 8%;
+    overflow: hidden;
+    border: var(--border-strong);
+    border-radius: 50%;
+    box-shadow: var(--shadow-poster-lg);
+  }
+
+  .hero__visual :global(.hero__img) {
+    position: relative;
+    width: 96%;
+    height: auto;
+    filter: drop-shadow(0 18px 16px rgb(30 38 41 / 0.4));
+  }
+
+  .hero__visual--framed :global(.hero__img) {
+    width: 84%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 50%;
+    filter: none;
+  }
+
+  .hero__visual :global(.placeholder) {
+    width: 70%;
+    background-color: var(--color-paper);
+    filter: none;
+  }
+
+  .hero__visual :global(.hero__badge) {
+    position: absolute;
+  }
+
+  .hero__visual :global(.hero__badge--tag) {
+    top: 0;
+    left: 0;
+  }
+
+  .hero__visual :global(.hero__badge--price) {
+    right: 0;
+    bottom: 2%;
+  }
+
+  .hero :global(.hero__checker) {
+    position: relative;
+    border-top: var(--border-strong);
+  }
+</style>

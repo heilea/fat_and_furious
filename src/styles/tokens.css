@@ -1,0 +1,75 @@
+/*
+ * Design system Fat & Furious : toutes les couleurs, polices, tailles et espacements du site.
+ * Les composants n'utilisent QUE ces variables. Changer une valeur ici la change partout.
+ * Couleurs relevées sur les visuels Instagram / Facebook et la carte du restaurant.
+ */
+:root {
+  /* Couleurs de la marque */
+  --color-teal: #3aa0ab; /* couleur signature : fonds, cercle du logo */
+  --color-teal-dark: #23707a; /* texte teal sur fond clair, survols */
+  --color-teal-deep: #1c4b50; /* bandeaux "néon" de la carte */
+  --color-neon: #8cf2ee; /* lettres néon */
+  --color-red: #c8302b; /* titres script, boutons, pastilles */
+  --color-red-dark: #9e2420; /* survols du rouge */
+  --color-cream: #f6eedc; /* fond principal, contours des titres */
+  --color-paper: #fbf7ec; /* fond des cartes et du menu */
+  --color-ink: #1e2629; /* texte courant, ombres portées */
+  --color-white: #ffffff;
+  --color-muted: #5a6466; /* texte secondaire (descriptions) */
+
+  /* Rôles : à utiliser dans les composants plutôt que les couleurs brutes */
+  --bg: var(--color-cream);
+  --bg-card: var(--color-paper);
+  --text: var(--color-ink);
+  --text-muted: var(--color-muted);
+  --accent: var(--color-red);
+  --accent-hover: var(--color-red-dark);
+  --link: var(--color-teal-dark);
+  --focus-ring: var(--color-red);
+
+  /*
+   * Polices : les variables --font-poster (Bebas Neue), --font-script (Lobster) et --font-body (Inter)
+   * sont créées par l'API Fonts d'Astro. Pour changer une police : astro.config.mjs, rubrique "fonts".
+   */
+
+  /* Tailles de texte fluides : min, idéal, max */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --text-xl: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  --text-2xl: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+  --text-3xl: clamp(3.25rem, 2rem + 6vw, 7.5rem);
+
+  /* Espacements */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --container: 72rem;
+
+  /* Formes */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+  --border-strong: 3px solid var(--color-ink);
+
+  /* Ombres "affiche" : décalées et nettes, comme un tampon imprimé */
+  --shadow-poster: 4px 4px 0 var(--color-ink);
+  --shadow-poster-lg: 8px 8px 0 var(--color-ink);
+  --shadow-soft: 0 10px 30px -12px rgb(30 38 41 / 0.35);
+
+  /* Motif damier */
+  --checker-size: 1.25rem;
+
+  /* Mouvement */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration: 200ms;
+}

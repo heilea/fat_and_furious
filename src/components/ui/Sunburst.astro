@@ -1,0 +1,40 @@
+---
+/** Fond à rayons de soleil (sunburst), comme sur les affiches du restaurant. Se place dans un parent en position relative. */
+interface Props {
+  a?: string;
+  b?: string;
+  /** Nombre de rayons. */
+  rays?: number;
+  /** Centre des rayons, ex. "50% 40%". */
+  center?: string;
+  class?: string;
+}
+
+const {
+  a = 'var(--color-teal)',
+  b = 'color-mix(in srgb, var(--color-teal) 82%, var(--color-white))',
+  rays = 24,
+  center = '50% 50%',
+  class: className,
+} = Astro.props;
+const step = 360 / rays / 2;
+---
+
+<div
+  class:list={['sunburst', className]}
+  style={`--a: ${a}; --b: ${b}; --step: ${step}deg; --center: ${center}`}
+  aria-hidden="true"
+></div>
+
+<style>
+  .sunburst {
+    position: absolute;
+    inset: 0;
+    background: repeating-conic-gradient(
+      from 0deg at var(--center),
+      var(--a) 0 var(--step),
+      var(--b) 0 calc(var(--step) * 2)
+    );
+    pointer-events: none;
+  }
+</style>

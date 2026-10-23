@@ -1,0 +1,285 @@
+---
+/**
+ * Galerie photos (src/data/gallery.yaml) avec visionneuse plein écran : clic, flèches, Échap, glisser.
+ * Tant qu'aucune photo n'est fournie, des emplacements "photo à venir" et le lien Instagram s'affichent.
+ */
+import { Image, getImage } from 'astro:assets';
+import Button from './ui/Button.astro';
+import ImagePlaceholder from './ui/ImagePlaceholder.astro';
+import SectionTitle from './ui/SectionTitle.astro';
+import { getGalerie, getRestaurant } from '../lib/data';
+
+const [photos, restaurant] = await Promise.all([getGalerie(), getRestaurant()]);
+
+// Version grand format de chaque photo, chargée seulement à l'ouverture de la visionneuse.
+const grandes = await Promise.all(photos.map((p) => getImage({ src: p.image, width: 1600 })));
+---
+
+<section id="galerie" class="gallery" aria-labelledby="galerie-titre">
+  <div class="container">
+    <SectionTitle id="galerie-titre" script="L'ambiance" title="Bienvenue au diner" />
+
+    {photos.length > 0 ? (
+      <ul class="gallery__grid" data-gallery>
+        {photos.map((photo, i) => (
+          <li class:list={['gallery__item', { 'gallery__item--wide': i % 5 === 0 }]}>
+            <button
+              type="button"
+              class="gallery__open"
+              data-index={i}
+              data-src={grandes[i].src}
+              data-alt={photo.alt}
+              aria-label={`Agrandir : ${photo.alt}`}
+            >
+              <Image
+                src={photo.image}
+                alt={photo.alt}
+                widths={[320, 480, 720]}
+                sizes="(min-width: 900px) 33vw, 50vw"
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul class="gallery__grid">
+        {[0, 1, 2].map((i) => (
+          <li class:list={['gallery__item', { 'gallery__item--wide': i === 0 }]}>
+            <ImagePlaceholder ratio="1" />
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {restaurant.reseaux.instagram && (
+      <p class="gallery__cta">
+        <Button href={restaurant.reseaux.instagram} variant="light" target="_blank" rel="noopener">
+          Plus de photos sur Instagram
+        </Button>
+      </p>
+    )}
+  </div>
+
+  {photos.length > 0 && (
+    <dialog class="lightbox" aria-label="Visionneuse de photos" data-lightbox>
+      <figure class="lightbox__figure">
+        <img class="lightbox__img" alt="" data-lightbox-img />
+        <figcaption class="lightbox__caption" data-lightbox-caption />
+      </figure>
+      <button
+        type="button"
+        class="lightbox__btn lightbox__close"
+        data-lightbox-close
+        aria-label="Fermer"
+      >
+        ✕
+      </button>
+      <button
+        type="button"
+        class="lightbox__btn lightbox__prev"
+        data-lightbox-prev
+        aria-label="Photo précédente"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        class="lightbox__btn lightbox__next"
+        data-lightbox-next
+        aria-label="Photo suivante"
+      >
+        ›
+      </button>
+    </dialog>
+  )}
+</section>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const openers = [...document.querySelectorAll<HTMLButtonElement>('[data-gallery] [data-index]')];
+
+  if (dialog && openers.length) {
+    const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const caption = dialog.querySelector<HTMLElement>('[data-lightbox-caption]')!;
+    let current = 0;
+
+    const show = (index: number) => {
+      current = (index + openers.length) % openers.length;
+      const { src = '', alt = '' } = openers[current].dataset;
+      img.src = src;
+      img.alt = alt;
+      caption.textContent = `${alt} (${current + 1}/${openers.length})`;
+    };
+
+    openers.forEach((btn, i) =>
+      btn.addEventListener('click', () => {
+        show(i);
+        dialog.showModal();
+      }),
+    );
+
+    dialog.querySelector('[data-lightbox-close]')?.addEventListener('click', () => dialog.close());
+    dialog
+      .querySelector('[data-lightbox-prev]')
+      ?.addEventListener('click', () => show(current - 1));
+    dialog
+      .querySelector('[data-lightbox-next]')
+      ?.addEventListener('click', () => show(current + 1));
+    // Échap ferme nativement le <dialog> ; on rend le focus à la vignette ouverte.
+    dialog.addEventListener('close', () => openers[current].focus());
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') show(current + 1);
+      if (e.key === 'ArrowLeft') show(current - 1);
+    });
+    // Clic sur le fond sombre = fermer.
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+
+    // Glisser du doigt sur mobile.
+    let startX = 0;
+    dialog.addEventListener('touchstart', (e) => (startX = e.touches[0].clientX), {
+      passive: true,
+    });
+    dialog.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    });
+  }
+</script>
+
+<style>
+  .gallery {
+    padding-block: var(--space-8);
+    background: var(--color-teal);
+  }
+
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-flow: dense;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 900px) {
+    .gallery__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .gallery__item--wide {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .gallery__open {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    background: none;
+    border: var(--border-strong);
+    border-radius: var(--radius-md);
+    cursor: zoom-in;
+  }
+
+  .gallery__open :global(img) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transition: transform 400ms var(--ease-out);
+  }
+
+  .gallery__open:hover :global(img) {
+    transform: scale(1.05);
+  }
+
+  .gallery__cta {
+    margin-top: var(--space-7);
+    text-align: center;
+  }
+
+  .gallery__cta :global(.btn--light) {
+    background: var(--color-ink);
+  }
+
+  /* Visionneuse */
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    padding: var(--space-6) var(--space-4);
+    background: transparent;
+    border: 0;
+  }
+
+  .lightbox::backdrop {
+    background: rgb(15 20 22 / 0.92);
+  }
+
+  .lightbox[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  .lightbox__figure {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    max-width: min(100%, 75rem);
+  }
+
+  .lightbox__img {
+    max-height: 80dvh;
+    width: auto;
+    border: 3px solid var(--color-cream);
+    border-radius: var(--radius-md);
+  }
+
+  .lightbox__caption {
+    color: var(--color-cream);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  .lightbox__btn {
+    position: fixed;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    background: var(--color-cream);
+    border: 2px solid var(--color-ink);
+    border-radius: 50%;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .lightbox__close {
+    top: var(--space-4);
+    right: var(--space-4);
+    font-size: 1.1rem;
+  }
+
+  .lightbox__prev,
+  .lightbox__next {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox__prev {
+    left: var(--space-3);
+  }
+
+  .lightbox__next {
+    right: var(--space-3);
+  }
+</style>

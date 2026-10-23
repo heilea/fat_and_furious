@@ -1,0 +1,106 @@
+---
+/** Une ligne de la carte : nom, prix (avec pointillés comme sur la carte papier), composition et pastilles. */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import Badge from './ui/Badge.astro';
+import { prixProduit } from '../lib/format';
+
+interface Props {
+  nom: string;
+  description?: string;
+  prix?: number;
+  prixLibelle?: string;
+  tags?: readonly string[];
+  image?: ImageMetadata;
+  devise?: string;
+}
+
+const { nom, description, prix, prixLibelle, tags = [], image, devise } = Astro.props;
+
+const TAG_LABELS: Record<string, string> = {
+  nouveau: 'Nouveau',
+  'a-partager': 'À partager',
+  signature: 'Signature',
+};
+---
+
+<article class="item">
+  {image && <Image src={image} alt={nom} class="item__photo" widths={[160, 320]} sizes="5rem" />}
+  <div class="item__body">
+    <div class="item__head">
+      <h3 class="item__name">{nom}</h3>
+      <span class="item__dots" aria-hidden="true"></span>
+      <span class="item__price">{prixProduit({ prix, prixLibelle }, devise)}</span>
+    </div>
+    {description && <p class="item__desc">{description}</p>}
+    {tags.length > 0 && (
+      <p class="item__tags">
+        {tags.map((tag) => (
+          <Badge tone={tag === 'signature' ? 'red' : 'teal'}>{TAG_LABELS[tag] ?? tag}</Badge>
+        ))}
+      </p>
+    )}
+  </div>
+</article>
+
+<style>
+  .item {
+    display: flex;
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+  }
+
+  .item :global(.item__photo) {
+    flex: none;
+    width: 5rem;
+    height: 5rem;
+    object-fit: cover;
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-md);
+  }
+
+  .item__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .item__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .item__name {
+    font-size: var(--text-lg);
+    letter-spacing: 0.04em;
+  }
+
+  .item__dots {
+    flex: 1;
+    min-width: 1.5rem;
+    border-bottom: 2px dotted color-mix(in srgb, var(--color-ink) 55%, transparent);
+    transform: translateY(-0.3em);
+  }
+
+  .item__price {
+    font-family: var(--font-poster);
+    font-size: var(--text-lg);
+    letter-spacing: 0.04em;
+    color: var(--color-red);
+    white-space: nowrap;
+  }
+
+  .item__desc {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  .item__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+</style>

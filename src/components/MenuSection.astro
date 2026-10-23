@@ -1,0 +1,235 @@
+---
+/**
+ * La carte, générée depuis src/data/menu.yaml.
+ * Tous les produits sont dans le HTML (indexés par Google). Avec JavaScript, des onglets
+ * n'affichent qu'une catégorie à la fois ; sans JavaScript, toute la carte reste visible.
+ */
+import MenuCard from './MenuCard.astro';
+import Checker from './ui/Checker.astro';
+import SectionTitle from './ui/SectionTitle.astro';
+import { getMenu, getRestaurant } from '../lib/data';
+
+const [menu, restaurant] = await Promise.all([getMenu(), getRestaurant()]);
+---
+
+<section id="menu" class="menu" aria-labelledby="menu-titre">
+  <Checker a="var(--color-red)" b="var(--color-white)" />
+  <div class="menu__inner container">
+    <SectionTitle id="menu-titre" script="La carte" title="Burgers fat & milkshakes furious" />
+
+    <div class="menu__tabs-wrap" data-menu-tabs hidden>
+      <div class="menu__tabs" role="tablist" aria-label="Catégories de la carte">
+        {menu.map((categorie, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`onglet-${categorie.id}`}
+            aria-controls={`carte-${categorie.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            class="menu__tab"
+          >
+            {categorie.titre}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div class="menu__board">
+      {menu.map((categorie) => (
+        <section
+          id={`carte-${categorie.id}`}
+          class="menu__panel"
+          aria-labelledby={`titre-${categorie.id}`}
+          data-menu-panel
+        >
+          <SectionTitle
+            id={`titre-${categorie.id}`}
+            variant="neon"
+            title={categorie.titre}
+            as="h3"
+          />
+          {categorie.note && <p class="menu__note">{categorie.note}</p>}
+          <div class="menu__items">
+            {categorie.produits.map((produit) => (
+              <MenuCard {...produit} devise={restaurant.devise} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <p class="menu__footnote">
+      Prix en {restaurant.devise}.{!restaurant.reservation && ' Sans réservation.'}
+    </p>
+  </div>
+</section>
+
+<script>
+  // Onglets accessibles (motif WAI-ARIA "tabs") : flèches gauche/droite, Début, Fin.
+  const wrap = document.querySelector<HTMLElement>('[data-menu-tabs]');
+  const tabs = [...(wrap?.querySelectorAll<HTMLButtonElement>('[role="tab"]') ?? [])];
+  const panels = [...document.querySelectorAll<HTMLElement>('[data-menu-panel]')];
+
+  if (wrap && tabs.length) {
+    wrap.hidden = false;
+    panels.forEach((panel, i) => {
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tabs[i].id);
+      panel.tabIndex = 0;
+    });
+
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        const active = i === index;
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+        panels[i].hidden = !active;
+      });
+      if (focus) tabs[index].focus();
+      // Garde l'onglet actif visible dans la barre (défilement horizontal uniquement).
+      const list = tabs[index].parentElement;
+      list?.scrollTo({ left: tabs[index].offsetLeft - list.offsetLeft - 16, behavior: 'smooth' });
+    };
+
+    // Après un changement de catégorie depuis le bas d'une longue liste, remonte au début de la carte.
+    const board = document.querySelector<HTMLElement>('.menu__board');
+    const revealBoard = () => {
+      if (!board || board.getBoundingClientRect().top >= 0) return;
+      const offset =
+        (document.querySelector<HTMLElement>('[data-header]')?.offsetHeight ?? 0) +
+        wrap.offsetHeight;
+      window.scrollTo({ top: board.getBoundingClientRect().top + window.scrollY - offset - 16 });
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        select(i);
+        revealBoard();
+      });
+      tab.addEventListener('keydown', (e) => {
+        const keys: Record<string, number> = {
+          ArrowRight: (i + 1) % tabs.length,
+          ArrowLeft: (i - 1 + tabs.length) % tabs.length,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        if (e.key in keys) {
+          e.preventDefault();
+          select(keys[e.key], true);
+        }
+      });
+    });
+
+    select(0);
+  }
+</script>
+
+<style>
+  .menu {
+    background: var(--color-paper);
+  }
+
+  .menu__inner {
+    padding-block: var(--space-8);
+  }
+
+  .menu__tabs-wrap {
+    position: sticky;
+    top: 4.5rem;
+    z-index: 5;
+    margin: var(--space-6) calc(var(--gutter) * -1) var(--space-5);
+    padding: var(--space-3) var(--gutter);
+    background: var(--color-paper);
+  }
+
+  .menu__tabs {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  @media (min-width: 1100px) {
+    .menu__tabs {
+      flex-wrap: wrap;
+      justify-content: center;
+      overflow: visible;
+    }
+  }
+
+  .menu__tab {
+    flex: none;
+    padding: 0.55em 1.1em 0.45em;
+    background: var(--color-white);
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-poster);
+    font-size: var(--text-md);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    scroll-snap-align: start;
+    cursor: pointer;
+    transition:
+      background-color var(--duration),
+      color var(--duration);
+  }
+
+  .menu__tab:hover {
+    background: var(--color-cream);
+  }
+
+  .menu__tab[aria-selected='true'] {
+    background: var(--color-teal-deep);
+    color: var(--color-neon);
+    box-shadow: 3px 3px 0 var(--color-ink);
+  }
+
+  .menu__board {
+    display: grid;
+    gap: var(--space-8);
+    margin-top: var(--space-6);
+  }
+
+  .menu__panel {
+    padding: var(--space-6) var(--gutter);
+    background: var(--color-white);
+    border: var(--border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-poster-lg);
+  }
+
+  .menu__panel:focus-visible {
+    outline-offset: 6px;
+  }
+
+  .menu__note {
+    margin-top: var(--space-4);
+    text-align: center;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-teal-dark);
+  }
+
+  .menu__items {
+    display: grid;
+    column-gap: var(--space-7);
+    margin-top: var(--space-5);
+  }
+
+  @media (min-width: 900px) {
+    .menu__items {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .menu__footnote {
+    margin-top: var(--space-6);
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+</style>

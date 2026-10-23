@@ -1,0 +1,104 @@
+---
+/** Section "À propos" : l'esprit du diner. Données : rubrique aPropos de src/data/restaurant.yaml. */
+import { Image } from 'astro:assets';
+import Checker from './ui/Checker.astro';
+import ImagePlaceholder from './ui/ImagePlaceholder.astro';
+import SectionTitle from './ui/SectionTitle.astro';
+import { getRestaurant } from '../lib/data';
+
+const { aPropos } = await getRestaurant();
+---
+
+<section id="a-propos" class="about" aria-labelledby="a-propos-titre">
+  <Checker a="var(--color-teal)" b="var(--color-cream)" />
+  <div class="about__inner container">
+    <div class="about__text">
+      <SectionTitle id="a-propos-titre" script="Notre diner" title={aPropos.titre} align="start" />
+      {aPropos.paragraphes.map((p) => (
+        <p>{p}</p>
+      ))}
+      {aPropos.points.length > 0 && (
+        <ul class="about__points">
+          {aPropos.points.map((point) => (
+            <li>{point}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+    <div class="about__photo">
+      {aPropos.image ? (
+        <Image
+          src={aPropos.image}
+          alt={aPropos.imageAlt}
+          widths={[480, 720, 960]}
+          sizes="(min-width: 900px) 45vw, 100vw"
+        />
+      ) : (
+        <ImagePlaceholder label="Photo de la salle à venir" ratio="4 / 5" />
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    background: var(--color-cream);
+  }
+
+  .about__inner {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+    padding-block: var(--space-8);
+  }
+
+  @media (min-width: 900px) {
+    .about__inner {
+      grid-template-columns: 1.1fr 1fr;
+    }
+  }
+
+  .about__text {
+    display: grid;
+    gap: var(--space-4);
+    font-size: var(--text-md);
+  }
+
+  .about__text > p {
+    max-width: 52ch;
+  }
+
+  .about__points {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .about__points li {
+    padding: 0.45em 1em 0.35em;
+    background: var(--color-white);
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-pill);
+    box-shadow: 3px 3px 0 var(--color-ink);
+    font-family: var(--font-poster);
+    font-size: var(--text-lg);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .about__photo {
+    position: relative;
+  }
+
+  .about__photo :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border: var(--border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-poster-lg);
+  }
+</style>

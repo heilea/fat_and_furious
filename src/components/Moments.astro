@@ -1,0 +1,177 @@
+---
+/** Brunch du week-end et happy hour, en deux affiches. Données : src/data/restaurant.yaml. */
+import Checker from './ui/Checker.astro';
+import SectionTitle from './ui/SectionTitle.astro';
+import Starburst from './ui/Starburst.astro';
+import Sunburst from './ui/Sunburst.astro';
+import { getRestaurant } from '../lib/data';
+import { formatJours, formatPlage, parsePlage } from '../lib/horaires';
+
+const { brunch, happyHour } = await getRestaurant();
+---
+
+<section id="moments" class="moments" aria-labelledby="moments-titre">
+  <div class="container">
+    <SectionTitle id="moments-titre" script="Les bons plans" title="Brunch & happy hour" />
+
+    <div class="moments__grid">
+      <article class="poster poster--brunch">
+        <Sunburst center="50% 0%" rays={20} />
+        <div class="poster__content">
+          <p class="poster__kicker">{formatJours(brunch.jours)}</p>
+          <h3 class="poster__title">
+            <span class="poster__script">Brunch</span>
+            <span class="poster__main">du week-end</span>
+          </h3>
+          <p class="poster__hours">{formatPlage(parsePlage(brunch.horaire))}</p>
+          <p class="poster__text">{brunch.description}</p>
+        </div>
+        <Checker class="poster__checker" a="var(--color-ink)" b="var(--color-white)" rows={1} />
+      </article>
+
+      <article class="poster poster--happy">
+        <div class="poster__content">
+          <p class="poster__kicker">{formatJours(happyHour.jours)}</p>
+          <h3 class="poster__title">
+            <span class="poster__script">Happy</span>
+            <span class="poster__main">hour</span>
+          </h3>
+          <p class="poster__hours">{formatPlage(parsePlage(happyHour.horaire))}</p>
+          <p class="poster__text">{happyHour.offre}</p>
+        </div>
+        {happyHour.pastille && (
+          <Starburst class="poster__badge" tone="cream" size="7rem" tilt={12}>
+            {happyHour.pastille}
+          </Starburst>
+        )}
+        <Checker class="poster__checker" a="var(--color-ink)" b="var(--color-white)" rows={1} />
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .moments {
+    padding-block: var(--space-8);
+  }
+
+  .moments__grid {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-7);
+  }
+
+  @media (min-width: 800px) {
+    .moments__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .poster {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: var(--border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-poster-lg);
+  }
+
+  .poster--brunch {
+    background: var(--color-teal);
+  }
+
+  .poster--happy {
+    background: var(--color-red);
+    color: var(--color-white);
+  }
+
+  .poster__content {
+    position: relative;
+    flex: 1;
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: var(--space-3);
+    padding: var(--space-7) var(--space-6) var(--space-6);
+    text-align: center;
+  }
+
+  .poster__kicker {
+    padding: 0.35em 0.9em 0.25em;
+    background: var(--color-ink);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-poster);
+    font-size: var(--text-lg);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-cream);
+  }
+
+  .poster__title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 0.9;
+  }
+
+  .poster__script {
+    font-family: var(--font-script);
+    font-size: var(--text-2xl);
+    letter-spacing: 0;
+    color: var(--color-red);
+    -webkit-text-stroke: 0.12em var(--color-cream);
+    paint-order: stroke fill;
+    text-shadow: 4px 4px 0 var(--color-ink);
+    transform: rotate(-4deg);
+  }
+
+  .poster--happy .poster__script {
+    color: var(--color-teal);
+  }
+
+  .poster__main {
+    font-size: var(--text-2xl);
+    text-transform: uppercase;
+    color: var(--color-cream);
+    text-shadow: 4px 4px 0 var(--color-ink);
+  }
+
+  .poster__hours {
+    font-family: var(--font-poster);
+    font-size: var(--text-xl);
+    letter-spacing: 0.04em;
+  }
+
+  .poster--brunch .poster__hours,
+  .poster--brunch .poster__text {
+    color: var(--color-ink);
+  }
+
+  .poster__text {
+    max-width: 36ch;
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-paper);
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .poster :global(.poster__badge) {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+  }
+
+  .poster :global(.poster__checker) {
+    border-top: var(--border-strong);
+  }
+
+  @media (max-width: 520px) {
+    .poster :global(.poster__badge) {
+      --size: 5rem !important;
+    }
+  }
+</style>

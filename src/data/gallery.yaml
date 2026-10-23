@@ -1,0 +1,9 @@
+# Photos de la galerie, dans l'ordre d'affichage.
+# Déposer les photos dans src/assets/gallery/ puis ajouter une entrée :
+#
+#   - image: ../assets/gallery/salle-banquettes.jpg
+#     alt: La salle du diner avec ses banquettes rouges et blanches
+#
+# "alt" décrit la photo pour les malvoyants et pour Google : une phrase simple et précise.
+
+photos: []

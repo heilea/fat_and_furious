@@ -1,0 +1,39 @@
+---
+/** Petite étiquette en capitales (ex. "À partager", "Signature"). */
+interface Props {
+  tone?: 'red' | 'teal' | 'ink';
+}
+
+const { tone = 'red' } = Astro.props;
+---
+
+<span class:list={['badge', `badge--${tone}`]}>
+  <slot />
+</span>
+
+<style>
+  .badge {
+    display: inline-block;
+    padding: 0.3em 0.7em 0.2em;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-poster);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--color-white);
+    white-space: nowrap;
+  }
+
+  .badge--red {
+    background: var(--color-red);
+  }
+
+  .badge--teal {
+    background: var(--color-teal-dark);
+  }
+
+  .badge--ink {
+    background: var(--color-ink);
+  }
+</style>

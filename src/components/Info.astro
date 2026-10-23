@@ -1,0 +1,348 @@
+---
+/**
+ * Infos pratiques : horaires (jour courant mis en avant, "ouvert / fermé" à l'heure de Tahiti),
+ * adresse, carte Google Maps chargée au clic, téléphone et réseaux.
+ */
+import Button from './ui/Button.astro';
+import SectionTitle from './ui/SectionTitle.astro';
+import { getRestaurant } from '../lib/data';
+import { JOURS } from '../content.config';
+import { formatJours, formatPlage, parsePlage, plagesParJour } from '../lib/horaires';
+
+const restaurant = await getRestaurant();
+const { adresse, contact, reseaux } = restaurant;
+const plages = plagesParJour(restaurant);
+
+// Planning lu par le script "ouvert maintenant" : plages en minutes depuis minuit,
+// indexées comme Date.getDay() (0 = dimanche, 1 = lundi…).
+const toMinutes = (h: string) => Number(h.slice(0, 2)) * 60 + Number(h.slice(3, 5));
+const planning = [0, 1, 2, 3, 4, 5, 6].map((getDay) =>
+  plages[JOURS[(getDay + 6) % 7]].map((p) => [toMinutes(p.debut), toMinutes(p.fin)]),
+);
+
+const adresseLigne = `${adresse.rue}, ${adresse.codePostal} ${adresse.commune}, ${adresse.ile}`;
+const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(`${restaurant.nom}, ${adresseLigne}`)}&output=embed`;
+---
+
+<section id="infos" class="info" aria-labelledby="infos-titre">
+  <div class="container">
+    <SectionTitle id="infos-titre" script="On vous attend" title="Infos & horaires" />
+
+    <div class="info__grid">
+      <div class="card">
+        <div class="card__head">
+          <h3 class="card__title">Horaires</h3>
+          <p
+            class="status"
+            data-status
+            data-planning={JSON.stringify(planning)}
+            data-timezone={restaurant.fuseauHoraire}
+            hidden
+          ></p>
+        </div>
+        <table class="hours">
+          <caption class="visually-hidden">Horaires d'ouverture</caption>
+          <tbody>
+            {JOURS.map((jour, i) => (
+              <tr data-day={(i + 1) % 7}>
+                <th scope="row">{jour}</th>
+                <td>{formatPlage(parsePlage(restaurant.horaires[jour] ?? 'fermé'))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <ul class="extras">
+          <li>
+            <strong>Brunch</strong> · {formatJours(restaurant.brunch.jours)},{' '}
+            {formatPlage(parsePlage(restaurant.brunch.horaire))}
+          </li>
+          <li>
+            <strong>Happy hour</strong> · {formatJours(restaurant.happyHour.jours)},{' '}
+            {formatPlage(parsePlage(restaurant.happyHour.horaire))}
+          </li>
+          {!restaurant.reservation && (
+            <li>
+              <strong>Sans réservation</strong>
+            </li>
+          )}
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3 class="card__title">Nous trouver</h3>
+        <address class="address">
+          <strong>{restaurant.nom}</strong>
+          <br />
+          {adresse.rue}
+          <br />
+          {adresse.codePostal} {adresse.commune}, {adresse.ile}
+          {adresse.repere && <span class="address__hint">{adresse.repere}</span>}
+        </address>
+        <p class="contact">
+          <a href={`tel:${contact.telephoneInternational}`} class="contact__phone">
+            {contact.telephone}
+          </a>
+        </p>
+        <div class="actions">
+          <Button href={adresse.lienMaps} target="_blank" rel="noopener">
+            Itinéraire
+          </Button>
+          <Button href={`tel:${contact.telephoneInternational}`} variant="secondary">
+            Appeler
+          </Button>
+        </div>
+        <ul class="socials">
+          {reseaux.instagram && (
+            <li>
+              <a href={reseaux.instagram} target="_blank" rel="noopener">
+                Instagram
+              </a>
+            </li>
+          )}
+          {reseaux.facebook && (
+            <li>
+              <a href={reseaux.facebook} target="_blank" rel="noopener">
+                Facebook
+              </a>
+            </li>
+          )}
+        </ul>
+      </div>
+
+      <div class="map" data-map data-src={mapsEmbed}>
+        <button type="button" class="map__load" data-map-load>
+          <span class="map__pin" aria-hidden="true">
+            📍
+          </span>
+          Afficher la carte
+          <small>Google Maps se charge seulement après ce clic.</small>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // "Ouvert maintenant / Fermé" calculé à l'heure du restaurant, quel que soit le fuseau du visiteur.
+  const status = document.querySelector<HTMLElement>('[data-status]');
+  if (status) {
+    const planning: [number, number][][] = JSON.parse(status.dataset.planning ?? '[]');
+    const parts = Object.fromEntries(
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: status.dataset.timezone,
+        weekday: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23',
+      })
+        .formatToParts(new Date())
+        .map((p) => [p.type, p.value]),
+    );
+    const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday);
+    const minutes = Number(parts.hour) * 60 + Number(parts.minute);
+    const open = planning[day]?.some(([start, end]) => minutes >= start && minutes < end);
+
+    status.textContent = open ? 'Ouvert maintenant' : 'Fermé actuellement';
+    status.classList.add(open ? 'is-open' : 'is-closed');
+    status.hidden = false;
+    document.querySelector(`tr[data-day="${day}"]`)?.classList.add('is-today');
+  }
+
+  // Carte Google Maps chargée à la demande (performance et vie privée).
+  const map = document.querySelector<HTMLElement>('[data-map]');
+  map?.querySelector('[data-map-load]')?.addEventListener('click', () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = map.dataset.src ?? '';
+    iframe.title = 'Plan d’accès sur Google Maps';
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    map.replaceChildren(iframe);
+  });
+</script>
+
+<style>
+  .info {
+    padding-block: var(--space-8);
+    background: var(--color-paper);
+  }
+
+  .info__grid {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  @media (min-width: 900px) {
+    .info__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .map {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .card {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-white);
+    border: var(--border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-poster-lg);
+  }
+
+  .card__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .card__title {
+    font-size: var(--text-xl);
+  }
+
+  .status {
+    padding: 0.35em 0.9em 0.25em;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-poster);
+    font-size: var(--text-md);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-white);
+  }
+
+  .status.is-open {
+    background: var(--color-teal-dark);
+  }
+
+  .status.is-closed {
+    background: var(--color-red);
+  }
+
+  .hours {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .hours th,
+  .hours td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px dashed color-mix(in srgb, var(--color-ink) 30%, transparent);
+  }
+
+  .hours th {
+    font-weight: 500;
+    text-align: left;
+    text-transform: capitalize;
+  }
+
+  .hours td {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hours tr.is-today {
+    background: var(--color-cream);
+    font-weight: 700;
+  }
+
+  .hours tr.is-today th {
+    font-weight: 700;
+  }
+
+  .hours tr.is-today th::after {
+    content: ' · aujourd’hui';
+    font-weight: 500;
+    text-transform: none;
+    color: var(--color-teal-dark);
+  }
+
+  .extras {
+    display: grid;
+    gap: var(--space-1);
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-sm);
+  }
+
+  .address {
+    font-style: normal;
+    line-height: 1.7;
+  }
+
+  .address__hint {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .contact__phone {
+    font-family: var(--font-poster);
+    font-size: var(--text-xl);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--color-red);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .socials {
+    display: flex;
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+  }
+
+  .map {
+    overflow: hidden;
+    min-height: 22rem;
+    border: var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--color-teal-deep);
+  }
+
+  .map :global(iframe) {
+    display: block;
+    width: 100%;
+    height: 26rem;
+    border: 0;
+  }
+
+  .map__load {
+    display: grid;
+    place-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    min-height: 22rem;
+    background: repeating-linear-gradient(45deg, var(--color-teal-deep) 0 18px, #20565c 18px 36px);
+    border: 0;
+    font-family: var(--font-poster);
+    font-size: var(--text-xl);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-neon);
+    cursor: pointer;
+  }
+
+  .map__load small {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-cream);
+  }
+
+  .map__pin {
+    font-size: 2rem;
+  }
+</style>

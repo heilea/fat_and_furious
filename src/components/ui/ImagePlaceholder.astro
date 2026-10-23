@@ -1,0 +1,57 @@
+---
+/** Emplacement neutre affiché tant qu'une vraie photo n'a pas été fournie. Volontairement visible. */
+interface Props {
+  label?: string;
+  ratio?: string;
+  round?: boolean;
+  class?: string;
+}
+
+const { label = 'Photo à venir', ratio = '4 / 3', round = false, class: className } = Astro.props;
+---
+
+<div
+  class:list={['placeholder', { 'placeholder--round': round }, className]}
+  style={`--ratio: ${ratio}`}
+  role="img"
+  aria-label={label}
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 7h3l2-2.5h6L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Zm8 3.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"></path>
+  </svg>
+  <span>{label}</span>
+</div>
+
+<style>
+  .placeholder {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    aspect-ratio: var(--ratio);
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--color-paper) 0 12px,
+      color-mix(in srgb, var(--color-paper) 85%, var(--color-ink)) 12px 13px
+    );
+    border: 2px dashed color-mix(in srgb, var(--color-ink) 45%, transparent);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .placeholder--round {
+    border-radius: 50%;
+    aspect-ratio: 1;
+  }
+
+  .placeholder svg {
+    width: 2.5rem;
+    fill: currentColor;
+    opacity: 0.6;
+  }
+</style>

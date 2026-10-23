@@ -1,0 +1,29 @@
+---
+// Page d'accueil : assemble les sections. Le contenu vient de src/data/, pas d'ici.
+import Base from '../layouts/Base.astro';
+import About from '../components/About.astro';
+import Footer from '../components/Footer.astro';
+import Gallery from '../components/Gallery.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Info from '../components/Info.astro';
+import MenuSection from '../components/MenuSection.astro';
+import Moments from '../components/Moments.astro';
+import { getRestaurant } from '../lib/data';
+
+const restaurant = await getRestaurant();
+---
+
+<Base title={restaurant.seo.titre} description={restaurant.seo.description} jsonLd>
+  <Header />
+  <main id="contenu">
+    <div id="top"></div>
+    <Hero />
+    <MenuSection />
+    <Moments />
+    <About />
+    <Gallery />
+    <Info />
+  </main>
+  <Footer />
+</Base>

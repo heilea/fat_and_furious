@@ -1,0 +1,33 @@
+# LE fichier à modifier chaque mois : il pilote la grande bannière en haut du site.
+#
+# Pour changer de burger :
+#   1. déposer la photo dans src/assets/burger-du-moment/
+#   2. modifier les champs ci-dessous (et le chemin de "image")
+#   3. publier : le site, le partage sur les réseaux et les données Google suivent tout seuls.
+
+# Petite ligne au-dessus du nom.
+mention: Suggestion du mois d'octobre
+
+# Le nom s'affiche en deux parties, comme sur les affiches Instagram :
+# "titre" en grandes capitales, "titreScript" en lettres rouges attachées.
+titre: L'Indiana
+titreScript: Burger
+
+description: >-
+  Joue de bœuf confite à la bière, croustillant de mac & cheese, salade et tomate.
+
+# Prix en XPF. Laisser vide tant qu'il n'est pas confirmé : la pastille de prix sera masquée.
+prix:
+
+# Photo du burger, de préférence détourée sur fond transparent (PNG ou WebP).
+# Sans photo, un emplacement "photo à venir" s'affiche.
+# image: ../assets/burger-du-moment/indiana.png
+imageAlt: L'Indiana Burger, joue de bœuf confite et croustillant de mac & cheese
+# true si la photo est détourée (fond transparent), false si c'est une photo classique.
+detouree: true
+
+# Pastille facultative, par exemple NEW.
+pastille: NEW
+
+# Date de fin (AAAA-MM-JJ). Une fois dépassée, le build affiche un rappel pour changer de burger.
+jusquau: 2026-10-31

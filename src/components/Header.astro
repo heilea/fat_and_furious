@@ -1,0 +1,261 @@
+---
+/** Barre de navigation fixe : logo, ancres vers les sections, bouton d'appel. Menu repliable sur mobile. */
+import Logo from './Logo.astro';
+import { getRestaurant } from '../lib/data';
+
+const restaurant = await getRestaurant();
+
+const liens = [
+  { href: '#menu', label: 'Menu' },
+  { href: '#moments', label: 'Brunch & happy hour' },
+  { href: '#galerie', label: 'Galerie' },
+  { href: '#infos', label: 'Infos & horaires' },
+];
+---
+
+<header class="header" data-header>
+  <div class="header__inner container">
+    <a href="#top" class="header__logo">
+      <Logo name={restaurant.nom} size="3.25rem" />
+    </a>
+
+    <button
+      class="header__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-principale"
+      data-nav-toggle
+    >
+      <span class="header__toggle-bars" aria-hidden="true"></span>
+      <span class="visually-hidden">Menu de navigation</span>
+    </button>
+
+    <nav id="nav-principale" class="header__nav" aria-label="Navigation principale" data-nav>
+      <ul class="header__links">
+        {liens.map(({ href, label }) => (
+          <li>
+            <a href={href}>{label}</a>
+          </li>
+        ))}
+      </ul>
+      <a class="header__call" href={`tel:${restaurant.contact.telephoneInternational}`}>
+        Appeler · {restaurant.contact.telephone}
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+
+  const setOpen = (open: boolean) => {
+    toggle?.setAttribute('aria-expanded', String(open));
+    header?.classList.toggle('is-open', open);
+  };
+
+  toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  // Un clic sur un lien referme le menu mobile.
+  nav?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && header?.classList.contains('is-open')) {
+      setOpen(false);
+      toggle?.focus();
+    }
+  });
+
+  // Ombre sous la barre dès qu'on fait défiler la page.
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-cream);
+    border-bottom: 3px solid transparent;
+    transition:
+      border-color var(--duration),
+      box-shadow var(--duration);
+  }
+
+  .header.is-scrolled {
+    border-bottom-color: var(--color-ink);
+    box-shadow: 0 6px 0 -3px rgb(30 38 41 / 0.12);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 4.5rem;
+  }
+
+  .header__logo {
+    display: inline-flex;
+    padding-block: var(--space-2);
+    text-decoration: none;
+  }
+
+  .header__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .header__links {
+    display: flex;
+    gap: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .header__links a {
+    font-family: var(--font-poster);
+    font-size: var(--text-lg);
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    background: linear-gradient(var(--color-red), var(--color-red)) no-repeat left bottom / 0 3px;
+    transition: background-size var(--duration) var(--ease-out);
+  }
+
+  .header__links a:hover {
+    background-size: 100% 3px;
+  }
+
+  .header__call {
+    padding: 0.55em 1.1em 0.45em;
+    background: var(--color-red);
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-pill);
+    box-shadow: 3px 3px 0 var(--color-ink);
+    font-family: var(--font-poster);
+    font-size: var(--text-md);
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-white);
+  }
+
+  .header__call:hover {
+    background: var(--color-red-dark);
+  }
+
+  .header__toggle {
+    display: none;
+  }
+
+  /* Mobile : menu replié derrière un bouton */
+  @media (max-width: 959px) {
+    .header__toggle {
+      display: grid;
+      place-items: center;
+      width: 3rem;
+      height: 3rem;
+      background: var(--color-ink);
+      border: 0;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+    }
+
+    .header__toggle-bars,
+    .header__toggle-bars::before,
+    .header__toggle-bars::after {
+      display: block;
+      width: 1.4rem;
+      height: 3px;
+      background: var(--color-cream);
+      border-radius: 2px;
+      transition: transform var(--duration) var(--ease-out);
+    }
+
+    .header__toggle-bars {
+      position: relative;
+    }
+
+    .header__toggle-bars::before,
+    .header__toggle-bars::after {
+      content: '';
+      position: absolute;
+      left: 0;
+    }
+
+    .header__toggle-bars::before {
+      top: -7px;
+    }
+
+    .header__toggle-bars::after {
+      top: 7px;
+    }
+
+    .is-open .header__toggle-bars {
+      background: transparent;
+    }
+
+    .is-open .header__toggle-bars::before {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .is-open .header__toggle-bars::after {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .header__nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-4);
+      padding: var(--space-5) var(--gutter) var(--space-6);
+      background: var(--color-cream);
+      border-bottom: var(--border-strong);
+    }
+
+    .is-open .header__nav {
+      display: flex;
+    }
+
+    .header__links {
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .header__links a {
+      font-size: var(--text-xl);
+    }
+
+    .header__call {
+      text-align: center;
+    }
+
+    /* Sans JavaScript, le menu reste simplement affiché sous le logo. */
+    :global(.no-js) .header__inner {
+      flex-wrap: wrap;
+    }
+
+    :global(.no-js) .header__toggle {
+      display: none;
+    }
+
+    :global(.no-js) .header__nav {
+      position: static;
+      display: flex;
+      width: 100%;
+      padding-inline: 0;
+      border: 0;
+    }
+  }
+</style>

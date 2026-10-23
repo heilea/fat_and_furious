@@ -1,0 +1,91 @@
+---
+/** Bouton "pilule" façon affiche. Rendu en lien <a> si `href` est fourni, sinon en <button>. */
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'light';
+  size?: 'md' | 'lg';
+  type?: 'button' | 'submit';
+  class?: string;
+  [attr: string]: unknown;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  type = 'button',
+  class: className,
+  ...rest
+} = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : type}
+  class:list={['btn', `btn--${variant}`, `btn--${size}`, className]}
+  {...rest}
+>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 0.7em 1.5em 0.6em;
+    border: var(--border-strong);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-poster);
+    font-size: var(--text-lg);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: var(--shadow-poster);
+    cursor: pointer;
+    transition:
+      transform var(--duration) var(--ease-out),
+      box-shadow var(--duration) var(--ease-out),
+      background-color var(--duration);
+  }
+
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--color-ink);
+  }
+
+  .btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-ink);
+  }
+
+  .btn--lg {
+    font-size: var(--text-xl);
+  }
+
+  .btn--primary {
+    background: var(--accent);
+    color: var(--color-white);
+  }
+
+  .btn--primary:hover {
+    background: var(--accent-hover);
+  }
+
+  .btn--secondary {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .btn--light {
+    background: var(--color-teal);
+    color: var(--color-white);
+  }
+
+  .btn--light:hover {
+    background: var(--color-teal-dark);
+  }
+</style>

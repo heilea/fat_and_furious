@@ -1,0 +1,278 @@
+# La carte du restaurant, catégorie par catégorie, dans l'ordre d'affichage.
+# Source : la nouvelle carte publiée sur Facebook (octobre 2026). Prix en XPF.
+#
+# Une catégorie :
+#   - id: identifiant court, sans espace ni accent (sert au filtre et aux liens)
+#     titre: nom affiché sur l'onglet et en titre
+#     note: (facultatif) petite ligne sous le titre
+#     visible: (facultatif) false pour masquer la catégorie sans la supprimer
+#     produits: la liste des produits
+#
+# Un produit :
+#   - nom: nom affiché
+#     description: (facultatif) composition
+#     prix: prix en XPF, en chiffres
+#     prixLibelle: (facultatif) à la place de "prix" quand le prix varie, ex. "350 – 900"
+#     tags: (facultatif) pastilles parmi : nouveau, a-partager, signature
+#     image: (facultatif) photo dans src/assets/menu/, ex. ../assets/menu/bomburger.jpg
+
+- id: burgers
+  titre: Burgers
+  note: Servis avec nos onion rings, frites et sauce burger · Bœuf Angus
+  produits:
+    - nom: Original Ham
+      prix: 1400
+      description: Potato bun, steak Angus, salade, tomate, oignons confits, cornichon, sauce burger
+    - nom: California Cheese
+      prix: 1500
+      description: Potato bun, steak Angus, cheddar, salade, tomate, oignons confits, cornichon, sauce burger
+    - nom: Pulled Pork Burger
+      prix: 2200
+      description: Potato bun, porc confit, bacon, gouda, chou rouge, oignons confits, salade, sauce BBQ
+    - nom: The New York Slam
+      prix: 1800
+      description: Potato bun, steak Angus, cheddar, bacon, œuf à cheval, salade, crispy onions, tomate, cornichons, sauce burger
+    - nom: The Real Smash Burger
+      prix: 1900
+      description: Potato bun, 2 steaks smash, 2 cheddar, tomate, cornichons, oignons, ketchup, moutarde
+    - nom: California Sunset
+      prix: 1900
+      description: Potato bun, poulet tenders, cheddar chili, tomate, romaine, sauce ranch
+    - nom: Local Burger
+      prix: 2200
+      description: Potato bun, steak Angus, galette de uru, gouda, bacon, salade, tomate, oignons confits, sauce ranch
+    - nom: Pacific Coast
+      prix: 2200
+      description: Potato bun, poisson pané tempura, gouda, salade, tomate, chou rouge émincé, sauce soja, mayonnaise au wasabi
+    - nom: Sierra Nevada
+      prix: 2200
+      description: Potato bun, steak Angus, raclette, hash brown, bacon, salade, sauce sweet mayo
+    - nom: Venice Beach
+      prix: 2200
+      description: Potato bun, steak haché Angus, mozzarella, basilic, romaine ciselée, tomate confite, copeaux de parmesan, sauce mayo pesto
+    - nom: Bomburger
+      prix: 2600
+      description: Potato bun, sauce cheddar explosive, steak haché Angus, crispy onions, salade fraîche
+    - nom: Foie Gras Burger
+      prix: 2700
+      description: Potato bun, steak haché Angus, tranche d'emmental, foie gras poêlé, salade, tomate, oignons confits, mayonnaise truffée
+
+- id: burgers-xl
+  titre: Burgers XL & XXL
+  note: Servis avec nos onion rings, frites et sauce burger · Pour les très grosses faims
+  produits:
+    - nom: Big Truck Roadmaster
+      prix: 2900
+      description: Potato bun, 2 steaks Angus, fromage à raclette, bacon, 2 hash browns, champignons, cornichons, mayonnaise truffée
+    - nom: Le 66 Road
+      prix: 3200
+      description: Potato bun, triple steak Angus, gouda, bacon, crispy onions, sauce BBQ
+    - nom: Guantanamo
+      prix: 3200
+      description: Potato bun, 2 tenders poulet, bacon, cheddar, guacamole, salade, tomate
+    - nom: Fat Burger
+      prix: 5500
+      description: Burger XXL · Potato bun, 5 steaks, 5 hash browns, 5 cheddars, salade, tomate, oignons, sauce cheddar sur le burger
+      tags: [signature]
+
+- id: meat-lovers
+  titre: Meat lovers
+  note: Toutes nos viandes sont fraîches et Angus
+  produits:
+    - nom: Entrecôte 300 g
+      prix: 3500
+      description: Sauce et side au choix
+    - nom: Steak à cheval
+      prix: 2200
+      description: Steak haché, œuf, sauce et side au choix
+    - nom: Wonder Beef
+      prix: 2600
+      description: 2 steaks hachés garnis de cheddar, 2 hash browns, bacon et œuf à cheval
+    - nom: Travers de porc, marinade au Jack
+      prix: 2600
+    - nom: Pièce du boucher
+      prix: 3200
+      description: Pièce de bœuf de 400 g, sauce et side au choix
+
+- id: starters
+  titre: Starters
+  produits:
+    - nom: Wing
+      prix: 1200
+      description: Sauce BBQ
+    - nom: Tenders
+      prix: 900
+      description: Sauce tartare
+    - nom: Stick mozza
+      prix: 900
+      description: x10, sauce sweet chili
+    - nom: Onion rings
+      prix: 900
+      description: x15, sauce tartare
+    - nom: Nachos'n cheese
+      prix: 900
+      description: Sauce cheddar
+    - nom: Bucket to share
+      prix: 3500
+      description: 3 tenders, 2 wings, 5 sticks mozza, 10 onion rings, nachos, servi avec sauces cheddar, BBQ et sweet chili
+      tags: [a-partager]
+
+- id: salads
+  titre: Salads
+  produits:
+    - nom: Caesar salad au poulet
+      prix: 2200
+      description: Tenders, romaine, croûtons, parmesan, bacon, sauce César maison
+    - nom: Caesar salad crevette
+      prix: 2400
+      description: Queues de crevette panées, romaine, croûtons, parmesan, bacon, sauce César maison
+    - nom: Caesar salad thon
+      prix: 2200
+      description: Thon mi-cuit, romaine, croûtons, parmesan, bacon, sauce César maison
+    - nom: Salade Cobb
+      prix: 2200
+      description: Romaine, poulet tenders, œufs durs, avocat, bacon, tomate, fromage bleu, vinaigrette balsamique
+
+- id: specialties
+  titre: Hot-dogs & specialties
+  produits:
+    - nom: Hot dog classique
+      prix: 1500
+      description: Pain hot dog, saucisse, ketchup, moutarde, relish & crispy onions
+    - nom: New York Style Hot Dog
+      prix: 1650
+      description: Pain hot dog, saucisse entourée de bacon, sauce cheddar, relish & crispy onions, ketchup & moutarde
+    - nom: Furious Dog
+      prix: 1750
+      description: Pain hot dog, saucisse entourée de bacon, sauce cheddar, relish, crispy onions, œuf, ketchup & moutarde
+    - nom: Shrimp Roll
+      prix: 2200
+      description: Pain hot dog, crevettes locales, sauce sashimi, coleslaw, kimchi
+    - nom: Fish'n chips
+      prix: 2500
+
+- id: sides
+  titre: Sides
+  produits:
+    - nom: Mac & cheese
+      prix: 500
+    - nom: Onion rings
+      prix: 500
+    - nom: Coleslaw
+      prix: 500
+    - nom: Frites sauce cheddar
+      prix: 500
+    - nom: Potatoes
+      prix: 500
+    - nom: Frites
+      prix: 300
+    - nom: Salade
+      prix: 300
+
+- id: extras
+  titre: Suppléments & sauces
+  produits:
+    - nom: Supplément steak Angus frais
+      prix: 600
+    - nom: Supplément bacon
+      prix: 300
+    - nom: Supplément fromage, hash brown ou œuf
+      prix: 150
+    - nom: Sauce maison burger ou barbecue
+      prix: 300
+    - nom: Sauce maison ranch, mayonnaise truffée ou roquefort
+      prix: 500
+    - nom: Sauce maison poivre, sweet mayo, mayo wasabi ou beurre persillé
+      prix: 400
+
+- id: kids
+  titre: Furious Kids
+  note: Pour les moins de 12 ans · Avec 1 boisson et 2 boules de glace
+  produits:
+    - nom: Menu Furious Kids
+      prix: 1800
+      description: Au choix · Nuggets x6, frites, ketchup · Fish and chips, frites, sauce tartare · Hot dog classique, frites, ketchup · Cheeseburger, frites, ketchup
+
+- id: milkshakes
+  titre: Milkshakes
+  produits:
+    - nom: Classique
+      prix: 700
+      description: Chocolat, vanille, café, Nutella, pistache, cookie & cream ou caramel beurre salé
+    - nom: Snickers
+      prix: 900
+      description: Glace caramel beurre salé, lait, topping chocolat, cacahuètes et chantilly
+    - nom: Oréo
+      prix: 900
+      description: Glace vanille, lait, brisures d'Oréo et chantilly
+    - nom: Cookie
+      prix: 900
+      description: Glace cookie & cream, lait, topping chocolat, brisures de cookie et chantilly
+    - nom: Mocha
+      prix: 900
+      description: Glace café, lait, espresso, topping chocolat et chantilly
+
+- id: desserts
+  titre: Desserts
+  produits:
+    - nom: American brownie
+      prix: 1100
+    - nom: Original cheesecake
+      prix: 1300
+    - nom: Tiramisu café
+      prix: 1100
+    - nom: Tiramisu Nutella
+      prix: 1200
+    - nom: Chocolat liégeois ou café liégeois
+      prix: 1300
+    - nom: Pavlova
+      prix: 1300
+    - nom: Brioche perdue
+      prix: 1300
+    - nom: Fat Sunday
+      prix: 1500
+      description: Glace chocolat, vanille et caramel, morceaux de brownie, sauce chocolat, chantilly, éclats de cacahuètes
+      tags: [signature]
+    - nom: Coupe glacée
+      prixLibelle: 350 – 900
+      description: 1 boule 350 · 2 boules 650 · 3 boules 900. Parfums café, cookies & cream, caramel beurre salé, vanille, chocolat, Nutella, pistache
+
+# ---------------------------------------------------------------------------
+# Catégories prêtes mais masquées : les prix ne sont pas encore confirmés.
+# Pour les afficher : compléter les prix, puis passer "visible" à true.
+# ---------------------------------------------------------------------------
+
+- id: brunch
+  titre: Brunch
+  note: Samedi et dimanche, de 6h30 à 11h
+  visible: false
+  produits:
+    - nom: Eggs Benedict
+    - nom: Pancakes
+    - nom: Gaufres
+    - nom: Bagels
+    - nom: Viennoiseries
+    - nom: Breakfast français
+    - nom: Breakfast américain
+    - nom: Breakfast polynésien
+
+- id: boissons
+  titre: Boissons
+  visible: false
+  produits:
+    - nom: Eau plate O'Tahiti 1 L
+    - nom: Eau gazeuse San Benedetto 75 cl
+    - nom: Coke float
+      description: Coca-Cola ou Coca-Cola sans sucres 50 cl avec boule de glace vanille
+    - nom: Dr Pepper 33 cl
+    - nom: Canette 33 cl
+    - nom: Red Bull 25 cl
+    - nom: Ginger beer 20 cl
+    - nom: Tonic 20 cl
+    - nom: Soft drinks on tap 50 cl
+    - nom: Pichet de soda 1 L
+    - nom: Rotui au verre
+      description: Orange, mangue, banane, ananas
+    - nom: Citronnade au verre
+    - nom: Pichet de citronnade 1 L
+    - nom: Thé glacé

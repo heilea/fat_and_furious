@@ -1,0 +1,32 @@
+---
+/** Bande de damier, utilisée comme séparateur de section (élément décoratif). */
+interface Props {
+  /** Couleurs des cases (tokens CSS). */
+  a?: string;
+  b?: string;
+  /** Nombre de rangées de cases. */
+  rows?: number;
+  class?: string;
+}
+
+const {
+  a = 'var(--color-teal)',
+  b = 'var(--color-cream)',
+  rows = 2,
+  class: className,
+} = Astro.props;
+---
+
+<div
+  class:list={['checker', className]}
+  style={`--a: ${a}; --b: ${b}; --rows: ${rows}`}
+  aria-hidden="true"
+></div>
+
+<style>
+  .checker {
+    height: calc(var(--checker-size) * var(--rows));
+    background: repeating-conic-gradient(var(--a) 0 25%, var(--b) 0 50%) 0 0 /
+      calc(var(--checker-size) * 2) calc(var(--checker-size) * 2);
+  }
+</style>

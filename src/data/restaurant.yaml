@@ -1,0 +1,90 @@
+# Informations générales du restaurant.
+# Tout ce qui est ici apparaît sur le site ET dans les données lues par Google (JSON-LD).
+# Les horaires s'écrivent "HH:MM-HH:MM", ou "fermé".
+
+nom: Fat & Furious Diner
+accroche: Votre 1er diner américain à Tahiti
+description: >-
+  Burgers fat au bœuf Angus, hot-dogs et milkshakes furious dans une ambiance
+  100 % rock & diner. Le goût de l'Amérique à Tahiti, à Pirae.
+
+contact:
+  telephone: '40 57 67 76'
+  # Format international, utilisé pour le lien "appeler" et pour Google.
+  telephoneInternational: '+68940576776'
+
+adresse:
+  rue: Avenue Charles de Gaulle
+  codePostal: '98716'
+  commune: Pirae
+  ile: Tahiti
+  pays: PF # code ISO du pays (Polynésie française)
+  repere: Derrière l'OPT et la Banque de Polynésie
+  # TODO : coller le lien Google Maps exact de la fiche du restaurant.
+  lienMaps: https://www.google.com/maps/search/?api=1&query=Fat+%26+Furious+Diner+Pirae+Tahiti
+  # TODO : renseigner les coordonnées GPS exactes (clic droit sur le point dans Google Maps).
+  # gps:
+  #   latitude: -17.5
+  #   longitude: -149.5
+
+fuseauHoraire: Pacific/Tahiti
+
+horaires:
+  lundi: '11:00-21:00'
+  mardi: '11:00-21:00'
+  mercredi: '11:00-21:00'
+  jeudi: '11:00-21:00'
+  vendredi: '11:00-21:30'
+  samedi: '11:00-21:30'
+  dimanche: '11:00-21:00'
+
+brunch:
+  jours: [samedi, dimanche]
+  horaire: '06:30-11:00'
+  description: >-
+    Eggs Benedict, pancakes, gaufres, bagels, viennoiseries et nos breakfasts
+    français, américain et polynésien. Avec un café, un jus frais, un milkshake
+    ou un petit cocktail.
+
+happyHour:
+  jours: [lundi, mardi, mercredi, jeudi]
+  horaire: '16:30-18:00'
+  offre: -20 % sur les cocktails, mocktails et bières pour l'achat d'un starter
+  pastille: '-20 %' # texte de la pastille étoilée (facultatif)
+
+# Section "À propos". Texte repris des publications Facebook du restaurant.
+# TODO : remplacer par le texte "notre histoire" fourni par le client.
+aPropos:
+  titre: Le goût de l'Amérique à Tahiti
+  paragraphes:
+    - >-
+      Fat & Furious, c'est le premier diner américain de Tahiti : des banquettes
+      rouges, du chrome, du rock et une ambiance 100 % diner, à Pirae.
+    - >-
+      Au programme de ce road-trip culinaire : des burgers XXL au bœuf Angus,
+      encore plus fat, encore plus furious, des starters à partager (ou pas) et
+      des milkshakes qui te téléportent dans les années 80.
+  points:
+    - Bœuf Angus frais
+    - Burgers XL & XXL
+    - Sans réservation
+    - Fun garanti
+  # image: ../assets/gallery/salle.jpg
+  imageAlt: La salle du diner avec ses banquettes rouges et blanches
+
+reservation: false # "Sans réservation"
+gammeDePrix: '€€'
+devise: XPF
+langues: [Français, Anglais]
+
+reseaux:
+  instagram: https://www.instagram.com/fatandfurious_tahiti/
+  facebook: https://www.facebook.com/profile.php?id=61582791038359
+
+seo:
+  # Titre de l'onglet et du résultat Google (60 caractères max conseillés).
+  titre: Fat & Furious Diner · Burgers & diner américain à Pirae, Tahiti
+  # Résumé affiché sous le titre dans Google (160 caractères max conseillés).
+  description: >-
+    Le 1er diner américain de Tahiti : burgers XXL au bœuf Angus, hot-dogs,
+    milkshakes, brunch le week-end et happy hour. Avenue Charles de Gaulle, Pirae.

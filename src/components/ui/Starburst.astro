@@ -1,0 +1,92 @@
+---
+/** Pastille étoilée façon affiche promo ("NEW", "XXL", prix…). Le texte vient du slot. */
+interface Props {
+  size?: string;
+  tone?: 'red' | 'cream' | 'teal';
+  /** Inclinaison en degrés. */
+  tilt?: number;
+  /** Nombre de pointes. */
+  points?: number;
+  class?: string;
+}
+
+const { size = '7rem', tone = 'red', tilt = -12, points = 16, class: className } = Astro.props;
+
+// Polygone en étoile : alternance de rayons long / court autour du centre (50, 50).
+const polygon = Array.from({ length: points * 2 }, (_, i) => {
+  const angle = (Math.PI * i) / points - Math.PI / 2;
+  const radius = i % 2 === 0 ? 48 : 40;
+  return `${(50 + radius * Math.cos(angle)).toFixed(2)},${(50 + radius * Math.sin(angle)).toFixed(2)}`;
+}).join(' ');
+---
+
+<div
+  class:list={['starburst', `starburst--${tone}`, className]}
+  style={`--size: ${size}; --tilt: ${tilt}deg`}
+>
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <polygon points={polygon}></polygon>
+  </svg>
+  <span class="starburst__text">
+    <slot />
+  </span>
+</div>
+
+<style>
+  .starburst {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--size);
+    aspect-ratio: 1;
+    transform: rotate(var(--tilt));
+    filter: drop-shadow(3px 3px 0 var(--color-ink));
+  }
+
+  .starburst svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .starburst polygon {
+    stroke: var(--color-ink);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .starburst__text {
+    position: relative;
+    padding: 18%;
+    font-family: var(--font-poster);
+    font-size: calc(var(--size) * 0.24);
+    line-height: 0.95;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .starburst--red polygon {
+    fill: var(--color-red);
+  }
+
+  .starburst--red .starburst__text {
+    color: var(--color-white);
+  }
+
+  .starburst--cream polygon {
+    fill: var(--color-cream);
+  }
+
+  .starburst--cream .starburst__text {
+    color: var(--color-red);
+  }
+
+  .starburst--teal polygon {
+    fill: var(--color-teal);
+  }
+
+  .starburst--teal .starburst__text {
+    color: var(--color-white);
+  }
+</style>
