@@ -100,11 +100,22 @@ Déposer le fichier dans `src/assets/brand/` sous le nom `logo.svg` (ou `logo.pn
 
 ### Mettre en ligne
 
-1. Renseigner le vrai domaine dans `astro.config.mjs` (`SITE_URL`). Il sert à l'URL canonique, au sitemap et au `robots.txt`.
-2. Déployer le dossier du projet sur **Netlify** ou **Cloudflare Pages** : commande de build `npm run build`, dossier publié `dist`, variable `NODE_VERSION=22.23.4`.
-3. Après la mise en ligne :
-   - créer ou mettre à jour la fiche **Google Business Profile** avec exactement le même nom, la même adresse et le même téléphone que le site ;
-   - ajouter le site dans **Google Search Console** et y soumettre `https://<domaine>/sitemap-index.xml`.
+Le site est publié sur **GitHub Pages** : https://heilea.github.io/fat_and_furious/
+
+- **Chaque push sur `main` redéploie le site** automatiquement (workflow `.github/workflows/deploy.yml`, à suivre dans l'onglet *Actions* du dépôt).
+- Première fois seulement : sur GitHub, *Settings → Pages → Build and deployment → Source* : choisir **GitHub Actions**.
+- En local, le site est servi sous le même préfixe : http://localhost:4321/fat_and_furious/
+
+**Passer à un nom de domaine personnalisé** (recommandé pour le SEO) :
+
+1. Dans `astro.config.mjs` : `SITE_URL = 'https://www.mondomaine.pf'` et `BASE = '/'`.
+2. Créer `public/CNAME` contenant uniquement `www.mondomaine.pf`.
+3. Sur GitHub, *Settings → Pages → Custom domain* : saisir le domaine, puis cocher *Enforce HTTPS*. Chez le registraire du domaine, ajouter un enregistrement `CNAME` de `www` vers `heilea.github.io`.
+
+**Après la mise en ligne :**
+
+- créer ou mettre à jour la fiche **Google Business Profile** avec exactement le même nom, la même adresse et le même téléphone que le site ;
+- ajouter le site dans **Google Search Console** et y soumettre le sitemap (`…/sitemap-index.xml`).
 
 ---
 

@@ -2,13 +2,16 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// Domaine définitif du site : sert à l'URL canonique, au sitemap et aux balises Open Graph.
-// TODO : remplacer par le vrai nom de domaine avant la mise en ligne.
-const SITE_URL = 'https://fatandfurious.example';
+// Adresse du site : sert à l'URL canonique, au sitemap et aux balises Open Graph.
+// Hébergé sur GitHub Pages : https://heilea.github.io/fat_and_furious/
+// Avec un nom de domaine personnalisé : mettre SITE_URL = 'https://www.mondomaine.pf' et BASE = '/'.
+const SITE_URL = 'https://heilea.github.io';
+const BASE = '/fat_and_furious';
 
 // https://astro.build/config
 export default defineConfig({
   site: SITE_URL,
+  base: BASE,
   integrations: [
     sitemap({
       // La planche du design system n'a rien à faire dans Google.

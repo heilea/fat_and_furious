@@ -19,6 +19,9 @@ const site = Astro.site ?? new URL(Astro.url.origin);
 const canonical = new URL(Astro.url.pathname, site);
 const [restaurant, burger] = await Promise.all([getRestaurant(), getBurgerDuMoment()]);
 
+// Chemin d'un fichier de public/, en tenant compte du sous-dossier éventuel (base) du site.
+const asset = (path: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path}`;
+
 // Image de partage (Facebook, WhatsApp…) : la photo du burger du moment, sinon l'image par défaut.
 const ogImage = burger.image
   ? new URL(
@@ -26,7 +29,7 @@ const ogImage = burger.image
         .src,
       site,
     )
-  : new URL('/og-default.png', site);
+  : new URL(asset('og-default.png'), site);
 const ogAlt = burger.image ? burger.imageAlt : restaurant.nom;
 
 const structuredData = jsonLd ? await restaurantJsonLd(site, ogImage) : null;
@@ -45,8 +48,8 @@ const structuredData = jsonLd ? await restaurantJsonLd(site, ogImage) : null;
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#3aa0ab" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href={asset('favicon.svg')} />
+    <link rel="sitemap" href={asset('sitemap-index.xml')} />
     <meta name="generator" content={Astro.generator} />
 
     <meta property="og:type" content="restaurant" />
