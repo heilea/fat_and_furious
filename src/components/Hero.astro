@@ -2,15 +2,15 @@
 /**
  * Bannière d'accueil : met toujours en avant le burger du moment (src/data/burger-du-moment.yaml).
  * Composition reprise de leurs affiches "suggestion du mois" : fond crème, titre rouge,
- * burger posé sur un disque à rayons teal, bande de damier en bas.
+ * burger exposé sous la cloche en verre d'un jukebox, bande de damier en bas.
  * Le <h1> reste stable pour le référencement ; le burger est en <h2>.
  */
 import { Image } from 'astro:assets';
 import Button from './ui/Button.astro';
 import Checker from './ui/Checker.astro';
 import ImagePlaceholder from './ui/ImagePlaceholder.astro';
+import Jukebox from './ui/Jukebox.astro';
 import Starburst from './ui/Starburst.astro';
-import Sunburst from './ui/Sunburst.astro';
 import { getBurgerDuMoment, getRestaurant } from '../lib/data';
 import { formatPrix } from '../lib/format';
 
@@ -31,22 +31,21 @@ const [burger, restaurant] = await Promise.all([getBurgerDuMoment(), getRestaura
     </div>
 
     <div class:list={['hero__visual', { 'hero__visual--framed': !burger.detouree }]}>
-      <div class="hero__disc">
-        <Sunburst rays={28} />
-      </div>
-      {burger.image ? (
-        <Image
-          src={burger.image}
-          alt={burger.imageAlt}
-          class="hero__img"
-          widths={[360, 560, 760, 960]}
-          sizes="(min-width: 900px) 40vw, 85vw"
-          loading="eager"
-          fetchpriority="high"
-        />
-      ) : (
-        <ImagePlaceholder class="hero__img" label="Photo du burger à venir" round />
-      )}
+      <Jukebox class="hero__jukebox">
+        {burger.image ? (
+          <Image
+            src={burger.image}
+            alt={burger.imageAlt}
+            class="hero__img"
+            widths={[360, 560, 760]}
+            sizes="(min-width: 900px) 24vw, 55vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        ) : (
+          <ImagePlaceholder label="Photo du burger à venir" ratio="auto" />
+        )}
+      </Jukebox>
       {burger.pastille && (
         <Starburst class="hero__badge hero__badge--tag" size="clamp(5rem, 3.5rem + 4vw, 7rem)">
           {burger.pastille}
@@ -209,45 +208,39 @@ const [burger, restaurant] = await Promise.all([getBurgerDuMoment(), getRestaura
     gap: var(--space-4);
   }
 
-  /* Visuel : disque à rayons + burger posé dessus */
+  /* Visuel : le jukebox, avec le burger sous sa cloche en verre */
   .hero__visual {
     grid-area: visual;
     position: relative;
-    display: grid;
-    place-items: center;
-    width: min(100%, 34rem);
+    width: min(100%, 26rem);
     margin-inline: auto;
-    aspect-ratio: 1;
   }
 
-  .hero__disc {
-    position: absolute;
-    inset: 8%;
-    overflow: hidden;
-    border: var(--border-strong);
-    border-radius: 50%;
-    box-shadow: var(--shadow-poster-lg);
+  @media (min-width: 900px) {
+    .hero__visual {
+      translate: 30px 0;
+    }
   }
 
+  /*
+   * Photo classique : affichée en entier (rien n'est rogné), posée en bas de la cloche.
+   * Son bord haut se fond dans le fond crème de la cloche.
+   */
   .hero__visual :global(.hero__img) {
-    position: relative;
-    width: 96%;
-    height: auto;
-    filter: drop-shadow(0 18px 16px rgb(30 38 41 / 0.4));
+    object-fit: contain;
+    object-position: center bottom;
+    mask-image: linear-gradient(to bottom, transparent 28%, #000 35%);
   }
 
-  .hero__visual--framed :global(.hero__img) {
-    width: 84%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: 50%;
-    filter: none;
+  /* Photo détourée : posée entière dans la cloche, sur le fond crème */
+  .hero__visual:not(.hero__visual--framed) :global(.hero__img) {
+    object-position: center;
+    padding: 6%;
+    mask-image: none;
   }
 
   .hero__visual :global(.placeholder) {
-    width: 70%;
-    background-color: var(--color-paper);
-    filter: none;
+    border-radius: 0;
   }
 
   .hero__visual :global(.hero__badge) {
@@ -255,13 +248,13 @@ const [burger, restaurant] = await Promise.all([getBurgerDuMoment(), getRestaura
   }
 
   .hero__visual :global(.hero__badge--tag) {
-    top: 0;
-    left: 0;
+    top: 2%;
+    left: -4%;
   }
 
   .hero__visual :global(.hero__badge--price) {
-    right: 0;
-    bottom: 2%;
+    top: 34%;
+    right: -6%;
   }
 
   .hero :global(.hero__checker) {

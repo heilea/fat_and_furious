@@ -11,6 +11,8 @@
   --color-neon: #8cf2ee; /* lettres néon */
   --color-red: #c8302b; /* titres script, boutons, pastilles */
   --color-red-dark: #9e2420; /* survols du rouge */
+  --color-pink: #f0679e; /* rose néon mat : écusson du burger du moment */
+  --color-pink-light: #f7a3c4; /* rayons clairs de l'écusson */
   --color-cream: #f6eedc; /* fond principal, contours des titres */
   --color-paper: #fbf7ec; /* fond des cartes et du menu */
   --color-ink: #1e2629; /* texte courant, ombres portées */

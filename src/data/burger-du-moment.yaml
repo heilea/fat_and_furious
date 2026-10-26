@@ -21,10 +21,10 @@ prix:
 
 # Photo du burger, de préférence détourée sur fond transparent (PNG ou WebP).
 # Sans photo, un emplacement "photo à venir" s'affiche.
-# image: ../assets/burger-du-moment/indiana.png
+image: ../assets/burger-du-moment/indiana.jpg
 imageAlt: L'Indiana Burger, joue de bœuf confite et croustillant de mac & cheese
 # true si la photo est détourée (fond transparent), false si c'est une photo classique.
-detouree: true
+detouree: false
 
 # Pastille facultative, par exemple NEW.
 pastille: NEW
