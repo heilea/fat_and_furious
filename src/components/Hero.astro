@@ -212,29 +212,41 @@ const [burger, restaurant] = await Promise.all([getBurgerDuMoment(), getRestaura
   .hero__visual {
     grid-area: visual;
     position: relative;
-    width: min(100%, 26rem);
+    width: min(100%, 28rem);
     margin-inline: auto;
+    /* Taille du burger dans la cloche : 100 % = photo entière, au-delà = zoom (bords rognés). */
+    --burger-zoom: 150%;
   }
 
   @media (min-width: 900px) {
     .hero__visual {
+      width: min(100%, 30rem);
       translate: 30px 0;
     }
   }
 
   /*
-   * Photo classique : affichée en entier (rien n'est rogné), posée en bas de la cloche.
+   * Photo classique : posée en bas de la cloche, centrée, à la taille --burger-zoom.
    * Son bord haut se fond dans le fond crème de la cloche.
    */
   .hero__visual :global(.hero__img) {
-    object-fit: contain;
-    object-position: center bottom;
-    mask-image: linear-gradient(to bottom, transparent 28%, #000 35%);
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: var(--burger-zoom);
+    max-width: none;
+    height: auto;
+    translate: -50% 0;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 12%);
   }
 
   /* Photo détourée : posée entière dans la cloche, sur le fond crème */
   .hero__visual:not(.hero__visual--framed) :global(.hero__img) {
-    object-position: center;
+    position: static;
+    width: 100%;
+    height: 100%;
+    translate: none;
+    object-fit: contain;
     padding: 6%;
     mask-image: none;
   }
