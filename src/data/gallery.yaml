@@ -1,4 +1,4 @@
-# Photos de la galerie, dans l'ordre d'affichage.
+# Photos de la galerie, dans l'ordre d'affichage (la première s'affiche en grand).
 # Déposer les photos dans src/assets/gallery/ puis ajouter une entrée :
 #
 #   - image: ../assets/gallery/salle-banquettes.jpg
@@ -6,4 +6,10 @@
 #
 # "alt" décrit la photo pour les malvoyants et pour Google : une phrase simple et précise.
 
-photos: []
+photos:
+  - image: ../assets/gallery/bomburger.jpg
+    alt: Le Bomburger nappé de sa sauce cheddar explosive, avec frites et onion rings
+  - image: ../assets/gallery/pancake-burger.jpg
+    alt: Le Pancake Burger du brunch, avec œuf au plat, steak, bacon et cheddar
+  - image: ../assets/gallery/piece-de-boeuf.jpg
+    alt: Une pièce de bœuf grillée au beurre persillé, servie avec des frites

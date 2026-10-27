@@ -13,6 +13,12 @@ const [photos, restaurant] = await Promise.all([getGalerie(), getRestaurant()]);
 
 // Version grand format de chaque photo, chargée seulement à l'ouverture de la visionneuse.
 const grandes = await Promise.all(photos.map((p) => getImage({ src: p.image, width: 1600 })));
+
+// La première photo occupe 2 × 2 cases. La dernière s'élargit si besoin pour ne laisser
+// aucune case vide en bas de la grille (3 colonnes sur desktop, 2 sur mobile).
+const cases = photos.length + 3;
+const derniereDesktop = (3 - (cases % 3)) % 3; // cases vides à combler sur desktop : 0, 1 ou 2
+const derniereMobile = cases % 2; // case vide à combler sur mobile : 0 ou 1
 ---
 
 <section id="galerie" class="gallery" aria-labelledby="galerie-titre">
@@ -22,7 +28,18 @@ const grandes = await Promise.all(photos.map((p) => getImage({ src: p.image, wid
     {photos.length > 0 ? (
       <ul class="gallery__grid" data-gallery>
         {photos.map((photo, i) => (
-          <li class:list={['gallery__item', { 'gallery__item--wide': i % 5 === 0 }]}>
+          <li
+            class:list={[
+              'gallery__item',
+              {
+                'gallery__item--wide': i === 0,
+                [`gallery__item--fill-${derniereDesktop + 1}`]:
+                  i > 0 && i === photos.length - 1 && derniereDesktop > 0,
+                'gallery__item--fill-mobile':
+                  i > 0 && i === photos.length - 1 && derniereMobile > 0,
+              },
+            ]}
+          >
             <button
               type="button"
               class="gallery__open"
@@ -34,8 +51,14 @@ const grandes = await Promise.all(photos.map((p) => getImage({ src: p.image, wid
               <Image
                 src={photo.image}
                 alt={photo.alt}
-                widths={[320, 480, 720]}
-                sizes="(min-width: 900px) 33vw, 50vw"
+                widths={[320, 480, 720, 960, 1280]}
+                sizes={
+                  i === photos.length - 1 && derniereDesktop === 2
+                    ? '100vw'
+                    : i === 0 || i === photos.length - 1
+                      ? '(min-width: 900px) 66vw, 100vw'
+                      : '(min-width: 900px) 33vw, 50vw'
+                }
               />
             </button>
           </li>
@@ -173,6 +196,39 @@ const grandes = await Promise.all(photos.map((p) => getImage({ src: p.image, wid
   .gallery__item--wide {
     grid-column: span 2;
     grid-row: span 2;
+  }
+
+  @media (max-width: 899px) {
+    .gallery__item--fill-mobile {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .gallery__item--fill-2 {
+      grid-column: span 2;
+    }
+
+    .gallery__item--fill-3 {
+      grid-column: span 3;
+    }
+  }
+
+  /* Une case élargie garde la hauteur d'une rangée : la photo est recadrée en bandeau, pas étirée */
+  @media (max-width: 899px) {
+    .gallery__grid .gallery__item--fill-mobile :global(img) {
+      aspect-ratio: 2;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .gallery__grid .gallery__item--fill-2 :global(img) {
+      aspect-ratio: 2;
+    }
+
+    .gallery__grid .gallery__item--fill-3 :global(img) {
+      aspect-ratio: 3;
+    }
   }
 
   .gallery__open {

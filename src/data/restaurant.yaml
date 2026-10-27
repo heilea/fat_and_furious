@@ -69,7 +69,7 @@ aPropos:
     - Burgers XL & XXL
     - Sans réservation
     - Fun garanti
-  # image: ../assets/gallery/salle.jpg
+  image: ../assets/gallery/salle.jpg
   imageAlt: La salle du diner avec ses banquettes rouges et blanches
 
 reservation: false # "Sans réservation"
